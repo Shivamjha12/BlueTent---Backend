@@ -9,6 +9,6 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-user/', include('Accounts.urls')),
-    # path('api-podcast/', include('Main.urls')),
+    path('api/', include('Main.urls')),
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

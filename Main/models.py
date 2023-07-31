@@ -37,7 +37,7 @@ purpose_of_visit= (
 )
 
 class destinationPlanner(models.Model):
-    destination = models.ForeignKey(destination,on_delete=models.CASCADE,default="")
+    destination = models.ForeignKey(destination,on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE,default="")
     title = models.CharField(max_length=100,default="")
     postid = models.UUIDField(default=uuid.uuid4, editable=True)
@@ -51,6 +51,9 @@ class destinationPlanner(models.Model):
     visitCompleted = models.BooleanField(default=False)
     MoneySpent = models.IntegerField(default=0)
     tips = models.CharField(max_length=500,default=" ",null=True, blank=True)
+    
+    def __str__(self):
+        return self.title
     
 class Favorite_plan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

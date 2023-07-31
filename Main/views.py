@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated,IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import viewsets
+from django.http import JsonResponse
 
 class UserDestinationPlannerViewset(viewsets.ViewSet):
     def addDestionPlanner(self,request):
@@ -24,6 +25,7 @@ class UserDestinationPlannerViewset(viewsets.ViewSet):
         date_of_visit = request.data.get('date_of_visit')
 
         #user 
+        print(dest,user,title,description,budget,no_of_people,no_of_days,purpose_of_visit,date_of_visit, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         user = User.objects.filter(email=user).first()
         currentDestination = destination.objects.filter(name=dest).first()
         # creating the podcast object for user
@@ -43,3 +45,24 @@ class UserDestinationPlannerViewset(viewsets.ViewSet):
             return Response(status=201,data={'message': 'Podcast updated successfully'})
         else:
             return Response({'message': 'Podcast not found'})
+    
+    def getDestinations(self,request):
+        destinations = destination.objects.values_list('name', flat=True)
+        return JsonResponse({'destinations': list(destinations)})
+    
+    def getDestionationPlanner(self,request,postid):
+        post = destinationPlanner.objects.filter(postid=postid).first()
+        serializer = DestinationPlannerAdd(post)
+        return Response(serializer.data)
+    
+    def getUserPlans(self,request,userid):
+        user = User.objects.filter(email=userid).first()
+        plans = destinationPlanner.objects.filter(user=user)
+        serializer = DestinationPlannerAdd(plans,many=True)
+        return Response(serializer.data)
+    
+class planList(generics.ListCreateAPIView):
+    search_fields = ['title','description','destination.name']
+    filter_backends = (filters.SearchFilter,)
+    queryset = destinationPlanner.objects.all()
+    serializer_class = DestinationPlannerAdd

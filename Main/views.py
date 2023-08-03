@@ -12,7 +12,10 @@ from rest_framework import filters
 from rest_framework import viewsets
 from django.http import JsonResponse
 
-class UserDestinationPlannerViewset(viewsets.ViewSet):
+
+
+
+class UserDestinationPlannerViewset(viewsets.ViewSet):  
     def addDestionPlanner(self,request):
         dest= request.data.get('destination')
         user = request.data.get('user')
@@ -33,7 +36,14 @@ class UserDestinationPlannerViewset(viewsets.ViewSet):
         print(user, title, " ",description, purpose_of_visit, budget, date_of_visit)
 
         return Response(status=201)
-        
+    
+    def getNewPlans(self,request):
+        print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+        plans = destinationPlanner.objects.all()
+        serializer = DestinationPlannerAdd(plans,many=True)
+        print(plans, 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxsssssssssssssssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+        return Response(serializer.data)
+    
     def updateDestinationPlanner(self,request,pk):
         print(" =========  ",request.data)
         data = request.data
@@ -60,9 +70,11 @@ class UserDestinationPlannerViewset(viewsets.ViewSet):
         plans = destinationPlanner.objects.filter(user=user)
         serializer = DestinationPlannerAdd(plans,many=True)
         return Response(serializer.data)
+
+      
     
 class planList(generics.ListCreateAPIView):
-    search_fields = ['title','description','destination.name']
+    search_fields = ['title','description']
     filter_backends = (filters.SearchFilter,)
     queryset = destinationPlanner.objects.all()
     serializer_class = DestinationPlannerAdd
